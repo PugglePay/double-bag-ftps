@@ -86,6 +86,19 @@ class DoubleBagFTPS < Net::FTP
   end
   private :open_socket
 
+  def makepasv
+    if @sock.peeraddr[0] == "AF_INET"
+      # host, port = parse227(sendcmd("PASV")) #WAS!
+      # http://stackoverflow.com/questions/15653702/ruby-ftp-passive-mode-error
+      # Fix Extended Passive Mode (ESPV)
+      host, port = parse229(sendcmd("EPSV"))
+    else
+      host, port = parse229(sendcmd("EPSV"))
+    end
+    return host, port
+  end
+  private :makepasv
+
   #
   # Override parent to support ssl sockets
   #
